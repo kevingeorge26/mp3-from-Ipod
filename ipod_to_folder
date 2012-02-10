@@ -1,0 +1,25 @@
+#!/bin/bash
+
+usage="usage: ipod_to_folder <from-folder> <destination-folder>"
+
+if [ $# -lt 2 ]; then
+	echo $usage
+	exit 1
+fi
+
+for x in `find $1 -name *.mp3`
+do
+art=`id3tool $x | grep "Artist" | cut -d ":" -f 2-`
+name=`id3tool $x | grep "Song" | cut -d ":" -f 2-`
+name=`echo $name | tr " " "_"`
+art=`echo $art | tr " " "_"`
+echo $art ":" $name
+
+if [ -d $2/$art ]
+then
+cp $x $2/$art/$name
+else
+mkdir $2/$art
+cp $x $2/$art/$name
+fi
+done
