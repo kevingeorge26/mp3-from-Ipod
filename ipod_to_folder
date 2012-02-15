@@ -7,10 +7,20 @@ if [ $# -lt 2 ]; then
 	exit 1
 fi
 
+# &> means to redirect both stdout and stderr to /dev/null
+# the exit code for the hash command is stored in $?
+hash id3info &> /dev/null
+if [ $? -eq 1 ]; then
+    echo >&2 "id3info not found."
+    echo "sudo apt-get install libid3-tools"
+    exit 1
+fi
+
+
 for x in `find $1 -name *.mp3`
 do
-art=`id3tool $x | grep "Artist" | cut -d ":" -f 2-`
-name=`id3tool $x | grep "Song" | cut -d ":" -f 2-`
+art=`id3info $x | grep "performer" | cut -d ":" -f 2-`
+name=`id3info $x | grep "Title" | cut -d ":" -f 2-`
 name=`echo $name | tr " " "_"`
 art=`echo $art | tr " " "_"`
 echo $art ":" $name
