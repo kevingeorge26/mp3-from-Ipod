@@ -11,7 +11,7 @@ fi
 # the exit code for the hash command is stored in $?
 hash id3info &> /dev/null
 if [ $? -eq 1 ]; then
-    echo >&2 "id3info not found."
+    echo >&2 "id3info not found. Install and run the script again"
     echo "sudo apt-get install libid3-tools"
     exit 1
 fi
@@ -21,15 +21,15 @@ for x in `find $1 -name *.mp3`
 do
 art=`id3info $x | grep "performer" | cut -d ":" -f 2-`
 name=`id3info $x | grep "Title" | cut -d ":" -f 2-`
+album=`id3info $x | grep "Album" | cut -d ":" -f 2-`
 name=`echo $name | tr " " "_"`
 art=`echo $art | tr " " "_"`
-echo $art ":" $name
+album=`echo $album | tr " " "_"`
+echo $album ":" $art ":" $name
 
-if [ -d $2/$art ]
-then
-cp $x $2/$art/$name
-else
-mkdir $2/$art
-cp $x $2/$art/$name
+if [ ! -d $2"/"$art"/"$album ]; then
+    mkdir -p $2"/"$art"/"$album
 fi
+cp $x $2"/"$art"/"$album"/"$name
+
 done
